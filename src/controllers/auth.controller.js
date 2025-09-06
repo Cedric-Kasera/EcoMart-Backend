@@ -1,0 +1,33 @@
+import { registerSchema } from "../utils/joi.js";
+import * as userService from "../services/auth.service.js";
+import generateToken from "../utils/jwt.js";
+
+export const register = async (req, res) => {
+    try {
+        const { error, value } = registerSchema.validate(req.body);
+        if (error) return res.status(400).json({ error: error.details[0].message });
+
+        const { name, email, phone, password, role, address } = value;
+
+        // extra safety: disallow client-side admin registration
+        if (role === "admin") {
+            return res.status(403).json({ error: "Cannot register as admin" });
+        }
+
+        const user = await userService.createUser({ name, email, phone, password, role, address });
+
+        const token = generateToken(user);
+
+        // remove sensitive fields before returning
+        const userObj = user.toObject();
+        delete userObj.passwordHash;
+
+        return res.status(201).json({ token, user: userObj });
+    } catch (err) {
+        if (err.code === "DUPLICATE") {
+            return res.status(409).json({ error: err.message });
+        }
+        console.error("Register error:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+};
