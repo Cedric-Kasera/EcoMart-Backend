@@ -14,7 +14,7 @@ export const register = async (req, res) => {
             return res.status(403).json({ error: "Cannot register as admin" });
         }
 
-        const user = await userService.createUser({ name, email, phone, password, role, address });
+        const user = await userService.registerUser({ name, email, phone, password, role, address });
 
         const token = generateToken(user);
 
@@ -54,4 +54,10 @@ export const login = async (req, res) => {
         console.error("Login error:", err);
         return res.status(500).json({ error: "Server error" });
     }
+};
+
+export const me = (req, res) => {
+    // authMiddleware already selected "-passwordHash" so req.user is safe
+    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    return res.json({ user: req.user });
 };
