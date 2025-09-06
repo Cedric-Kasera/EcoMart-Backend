@@ -8,3 +8,8 @@ export const registerSchema = Joi.object({
   role: Joi.string().valid("collector", "recycler").optional(),
   address: Joi.string().min(3).required()
 });
+
+export const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required()
+});

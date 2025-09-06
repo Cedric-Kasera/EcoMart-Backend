@@ -37,3 +37,17 @@ export async function registerUser({ name, email, phone, password, role = "colle
     await user.save();
     return user;
 }
+
+/**
+ * Authenticate a user with email + password
+ * @returns {Promise<User|null>}
+ */
+export async function authenticateUser(email, password) {
+    const user = await User.findOne({ email });
+    if (!user) return null;
+
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) return null;
+
+    return user;
+}
