@@ -14,3 +14,9 @@ export async function createListing({ collectorId, title, description, type, wei
     await listing.save();
     return listing;
 }
+
+export async function getCollectorListings(collectorId) {
+    const listings = await Listing.find({ collector: collectorId })
+        .sort({ createdAt: -1 });
+    return listings;
+}

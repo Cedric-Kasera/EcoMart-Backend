@@ -32,3 +32,18 @@ export const createListing = async (req, res) => {
         return res.status(500).json({ error: "Server error" });
     }
 };
+
+export const getMyListings = async (req, res) => {
+    try {
+        if (req.user.role !== "collector") {
+            return res.status(403).json({ error: "Only collectors can view their listings" });
+        }
+
+        const listings = await listingService.getCollectorListings(req.user._id);
+
+        return res.status(200).json({ listings });
+    } catch (err) {
+        console.error("Get my listings error:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+};
