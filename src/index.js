@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/connectDB.js";
 import authRoutes from "./routes/auth.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +23,7 @@ connectDB();
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/listings", listingRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Health check route
 app.get("/", (req, res) => {

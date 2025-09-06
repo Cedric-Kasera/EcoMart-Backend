@@ -20,3 +20,16 @@ export async function getCollectorListings(collectorId) {
         .sort({ createdAt: -1 });
     return listings;
 }
+
+export async function updateCollectorListing(listingId, collectorId, updateData) {
+    const listing = await Listing.findOneAndUpdate(
+        { _id: listingId, collector: collectorId },
+        { $set: updateData },
+        { new: true }
+    );
+    return listing;
+}
+
+export async function deleteListing(listingId) {
+    return Listing.findByIdAndDelete(listingId);
+}
