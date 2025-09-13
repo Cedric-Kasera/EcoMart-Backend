@@ -8,6 +8,8 @@ dotenv.config();
 
 const ADMIN_NAME = process.env.SEED_ADMIN_NAME || "Admin";
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || "admin@ecomart.local";
+const ADMIN_PHONE = process.env.SEED_ADMIN_PHONE || "0000000000";
+const ADMIN_ADDRESS = process.env.SEED_ADMIN_ADDRESS || "Default HQ Address";
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || "admin123";
 const FORCE_OVERWRITE = process.env.SEED_ADMIN_FORCE === "true";
 
@@ -22,20 +24,24 @@ async function seedAdmin() {
       process.exit(0);
     }
 
-    const hashed = await bcrypt.hash(ADMIN_PASSWORD, 10);
+    const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
 
     const adminData = {
       name: ADMIN_NAME,
       email: ADMIN_EMAIL,
-      password: hashed,
+      phone: ADMIN_PHONE,
+      passwordHash,
       role: "admin",
-      verified: true
+      address: ADMIN_ADDRESS,
+      verified: true,
     };
 
     if (existing && FORCE_OVERWRITE) {
       existing.name = adminData.name;
-      existing.password = adminData.password;
+      existing.phone = adminData.phone;
+      existing.passwordHash = adminData.passwordHash;
       existing.role = adminData.role;
+      existing.address = adminData.address;
       existing.verified = adminData.verified;
       await existing.save();
       console.log(`Admin user updated (overwritten): ${ADMIN_EMAIL}`);
@@ -48,7 +54,9 @@ async function seedAdmin() {
     process.exit(0);
   } catch (err) {
     console.error("Seeding admin failed:", err);
-    try { await mongoose.disconnect(); } catch (_) {}
+    try {
+      await mongoose.disconnect();
+    } catch (_) { }
     process.exit(1);
   }
 }
